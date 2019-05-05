@@ -1,0 +1,390 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.Data.OleDb;
+
+namespace Natalieluo
+{
+    public partial class Form1 : Form
+    {
+        public DataSet DtSet1 = new DataSet();
+        string cntext; //課程代碼
+        string[]cnArray=new string[100]; //課程代碼陣列
+        int err = 0;
+        public int recp1 = 0;
+        public int mode1 = 4;  //新增=1,修改=2,刪除=3,查詢=4
+        public int mode2 = 4;  //新增=1,修改=2,刪除=3,查詢=4
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.成績TableAdapter.Fill(this.natalieDataSet1.成績);
+            this.教師TableAdapter.Fill(this.natalieDataSet.教師);
+            groupBox2.Visible = false;
+            groupBox3.Visible = false;
+            groupBox4.Visible = false;
+            groupBox5.Visible = false;
+        }
+        private void dbquery(string dbname, string tbname, DataSet DtSet, string cmdstr)
+        {
+            //*******************Open database*******************           
+            string Source = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + dbname;
+            OleDbConnection conn = new OleDbConnection(Source);  //宣告連線的物件
+            conn.Open();                                         //開啟資料庫連線               
+            //*******************Search*******************
+            OleDbDataAdapter DtApter = new OleDbDataAdapter(cmdstr, conn);
+            DtApter.Fill(DtSet, tbname);                         //讀取資料表
+            //*******************Close database*******************
+            conn.Close();                                        // 關閉資料庫連線
+        }
+
+        private void dbupdate(string dbname, string cmdstr)
+        {
+            //*******************Open database*******************
+            string Source = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + dbname;
+            OleDbConnection conn = new OleDbConnection(Source);  //連線
+            conn.Open();                                         //開啟資料庫
+            //*******************Update*******************
+            OleDbCommand Cmd = new OleDbCommand(cmdstr, conn);
+            Cmd.ExecuteNonQuery();
+            //*******************Close database*******************
+            conn.Close();                             // 關閉資料庫
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            textBox2.Text = "";
+            groupBox2.Visible = false;
+            groupBox3.Visible = false;
+            groupBox4.Visible = false;
+            groupBox5.Visible = false;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string cmdstr = "select*from 教師 where 教師代碼='" + textBox1.Text + "' and 密碼='" + textBox2.Text + "'";
+            DtSet1.Clear();
+            dbquery("Natalie.Accdb", "aaa", DtSet1, cmdstr);
+            if (DtSet1.Tables["aaa"].Rows.Count > 0)
+            {
+                string uright = Convert.ToString(DtSet1.Tables["aaa"].Rows[0].ItemArray[5]);
+                if (uright == "a")
+                {
+                    groupBox2.Visible = true;
+                    groupBox3.Visible = true;
+                    groupBox4.Visible = true;
+                    groupBox5.Visible = true;
+                }
+                if (uright == "b")
+                {
+                    groupBox2.Visible = true;
+                    groupBox3.Visible = false;
+                    groupBox4.Visible = false;
+                    groupBox5.Visible = false;
+                }
+                label3.Text = "";
+                err = 0;
+            }
+            else
+            {
+                label3.Text = "帳號密碼錯誤";
+                err = err + 1;
+                if (err > 3) Application.Exit();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            recp1 = 0;
+            textBox3.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            textBox4.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            textBox5.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            if (Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]) == "a") radioButton1.Checked = true;
+            if (Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]) == "b") radioButton2.Checked = true;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            recp1 = DtSet1.Tables["aaa"].Rows.Count - 1;
+            textBox3.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            textBox4.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            textBox5.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            if (Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]) == "a") radioButton1.Checked = true;
+            if (Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]) == "b") radioButton2.Checked = true;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            recp1++;
+            if (recp1 >= DtSet1.Tables["aaa"].Rows.Count)
+            {
+                recp1 = DtSet1.Tables["aaa"].Rows.Count - 1;
+            }
+            textBox3.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            textBox4.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            textBox5.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            if (Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]) == "a") radioButton1.Checked = true;
+            if (Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]) == "b") radioButton2.Checked = true;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            recp1--;
+            if (recp1 < 0) recp1 = 0;
+            textBox3.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            textBox4.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            textBox5.Text = Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]);
+            if (Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]) == "a") radioButton1.Checked = true;
+            if (Convert.ToString(DtSet1.Tables["aaa"].Rows[recp1].ItemArray[0]) == "b") radioButton2.Checked = true;
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            mode1 = 1;
+            label8.Text = "新增";
+            button11.Enabled = true;
+            button12.Enabled = true;
+            button7.Enabled = false;
+            button8.Enabled = false;
+            button9.Enabled = false;
+            button10.Enabled = false;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            mode1 = 2;
+            label8.Text = "修改";
+            button11.Enabled = true;
+            button12.Enabled = true;
+            button7.Enabled = false;
+            button8.Enabled = false;
+            button9.Enabled = false;
+            button10.Enabled = false;
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            mode1 = 3;
+            label8.Text = "刪除";
+            button11.Enabled = true;
+            button12.Enabled = true;
+            button7.Enabled = false;
+            button8.Enabled = false;
+            button9.Enabled = false;
+            button10.Enabled = false;
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            mode1 = 4;
+            label8.Text = "查詢";
+            button11.Enabled = true;
+            button12.Enabled = true;
+            button7.Enabled = false;
+            button8.Enabled = false;
+            button9.Enabled = false;
+            button10.Enabled = false;
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            string cmdstr;
+            if (mode2 == 1)
+            { //新增
+                cmdstr = "insert into 教師(教師代碼,教師姓名,密碼,權限)values('" + textBox3.Text + "','" + textBox4.Text + "','" + textBox5.Text + "',";
+                if (radioButton1.Checked == true) cmdstr = cmdstr + "'a')";
+                else cmdstr = cmdstr + "'b')";
+            }
+            if (mode2 == 2)
+            { //修改
+                cmdstr = "update 教師 set 教師姓名='" + textBox4.Text + "',密碼='" + textBox5.Text;
+                if (radioButton1.Checked == true) cmdstr = cmdstr + "'權限='a'where教師代碼='" + textBox3.Text + "'";
+                else cmdstr = cmdstr + "'權限='b'where 教師代碼='" + textBox3.Text + "'";
+                dbupdate("成績.Accdb", cmdstr);
+                show1();
+            }
+            if (mode2 == 3)
+            { //刪除
+                cmdstr = "Delete from 教師 where 教師代碼='" + textBox3.Text + "'";
+                dbupdate("成績.Accdb", cmdstr);
+                show1();
+            }
+            if (mode2 == 4)
+            { //查詢
+                cmdstr = "select*form 教師 where 教師代碼='" + textBox3.Text + "'";
+                DtSet1.Clear();
+                dbquery("成績.Accdb", "aaa", DtSet1, cmdstr);
+                dataGridView1.DataSource = DtSet1.Tables["aaa"];
+            }
+            button11.Enabled = false;
+            button12.Enabled = false;
+            button7.Enabled = true;
+            button8.Enabled = true;
+            button9.Enabled = true;
+            button10.Enabled = true;
+            label8.Text = "";
+        }
+
+        private void show1()
+        {
+            string cmdstr = "Select*from教師";
+            DtSet1.Clear();
+            dbquery("成績.Accdb", "aaa", DtSet1, cmdstr);
+            dataGridView1.DataSource = DtSet1.Tables["aaa"];
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            textBox3.Text = "";
+            textBox4.Text = "";
+            textBox5.Text = "";
+            radioButton1.Checked = false;
+            radioButton2.Checked = false;
+            show1();
+            label8.Text = "";
+        }
+
+        private void tabControl1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage5_Enter(object sender, EventArgs e)
+        {
+            button11.Enabled = false;
+            button12.Enabled = false;
+            button7.Enabled = true;
+            button8.Enabled = true;
+            button9.Enabled = true;
+            button10.Enabled = true;
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            string cmdstr;
+            if (mode2 == 1)
+            { //新增
+                cmdstr = "insert into 成績(學號,課程代碼,成績)values('" + textBox6.Text + "','" + cntext + "','" + textBox7.Text + "',";
+                if (radioButton1.Checked == true) cmdstr = cmdstr + "'a')";
+                else cmdstr = cmdstr + "'b')";
+            }
+            if (mode2 == 2)
+            { //修改
+                cmdstr = "update 成績 set 成績='" + textBox7.Text + "',where學號='" + textBox6.Text +"' and 課程代碼='"+cntext;
+                if (radioButton1.Checked == true) cmdstr = cmdstr + "'權限='a'where教師代碼='" + textBox3.Text + "'";
+                else cmdstr = cmdstr + "'權限='b'where 教師代碼='" + textBox3.Text + "'";
+                dbupdate("成績.Accdb", cmdstr);
+                show1();
+            }
+            if (mode2 == 3)
+            { //刪除
+                cmdstr = "Delete from 成績 where 學號='" + textBox7.Text + "' and 課程代碼='"+cntext+"'";
+                dbupdate("成績.Accdb", cmdstr);
+                show1();
+            }
+            if (mode2 == 4)
+            { //查詢
+                cmdstr = "select*form 學號 where 課程代碼='" + textBox6.Text + "'";
+                DtSet1.Clear();
+                dbquery("成績.Accdb", "aaa", DtSet1, cmdstr);
+                dataGridView1.DataSource = DtSet1.Tables["aaa"];
+                if (textBox6.Text.Trim() != " ")
+                    cmdstr = cmdstr + " and 成績.學號='" + textBox6.Text + "'";
+                if (cntext != "全部課程") cmdstr = cmdstr + " and 成績.課程代碼='" + cntext + "'";
+            }
+        }
+
+        private void show2()
+        {
+            string cmdstr = "select 成績.學號,學生.姓名,課程.課程名稱,教師.教師姓名,成績.成績 from 成績,學生,課程,教師 where 成績.學號 AND 成績.課程代碼=課程.課程代碼 and 課程.教師代碼=教師.教師代碼";
+        }
+
+        private void show3()
+        {
+            comboBox1.Items.Clear(); //清空combobox1
+            for(int i=0;i<DtSet1.Tables["ccc"].Rows.Count;i++){
+                comboBox1.Items.Add(Convert.ToString(DtSet1.Tables["ccc"].Rows[i].ItemArray[i]));
+                cnArray[i]=Convert.ToString(DtSet1.Tables["ccc"].Rows[i].ItemArray[i]);
+            }
+            comboBox1.Items.Add("全部課程");
+            cnArray[1]="全部課程";
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            mode2 = 1;
+            label12.Text = "新增";
+            button17.Enabled = true;
+            button18.Enabled = true;
+            button13.Enabled = false;
+            button14.Enabled = false;
+            button15.Enabled = false;
+            button16.Enabled = false;
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            mode2 = 2;
+            label12.Text = "修改";
+            button17.Enabled = true;
+            button18.Enabled = true;
+            button13.Enabled = false;
+            button14.Enabled = false;
+            button15.Enabled = false;
+            button16.Enabled = false;
+        }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            mode2 = 3;
+            label12.Text = "刪除";
+            button17.Enabled = true;
+            button18.Enabled = true;
+            button13.Enabled = false;
+            button14.Enabled = false;
+            button15.Enabled = false;
+            button16.Enabled = false;
+        }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            mode2 = 4;
+            label12.Text = "查詢";
+            button17.Enabled = true;
+            button18.Enabled = true;
+            button13.Enabled = false;
+            button14.Enabled = false;
+            button15.Enabled = false;
+            button16.Enabled = false;
+        }
+
+        private void tabPage2_Enter(object sender, EventArgs e)
+        {
+            button17.Enabled = false;
+            button18.Enabled = false;
+            button13.Enabled = true;
+            button14.Enabled = true;
+            button15.Enabled = true;
+            button16.Enabled = true;
+        }
+
+        private void comboBox1_SelectedValueChanged(object sender, EventArgs e)
+        {
+            cntext=cnArray[comboBox1.SelectedIndex];
+        }
+    }
+}
