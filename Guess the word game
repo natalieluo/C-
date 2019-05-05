@@ -1,0 +1,73 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+
+namespace Natalieluo
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            int[] a = new int[4];
+            Random r = new Random();
+            a[0] = r.Next(1, 10);
+            a[1] = r.Next(0, 10);
+            while (a[1] == a[0])
+                a[1] = r.Next(0, 10);
+            a[2] = r.Next(0, 10);
+            while (a[2] == a[0] || a[2] == a[1])
+                a[2] = r.Next(0, 10);
+            a[3] = r.Next(0, 10);
+            while (a[3] == a[0] || a[3] == a[1] || a[3] == a[0])
+                a[3] = r.Next(0, 10);
+            label2.Text = a[0].ToString();
+            label3.Text = a[1].ToString();
+            label4.Text = a[2].ToString();
+            label5.Text = a[3].ToString();
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string a = textBox1.Text;
+            label6.Text = a.Substring(0, 1);
+            label7.Text = a.Substring(1, 1);
+            label8.Text = a.Substring(2, 1);
+            label9.Text = a.Substring(3, 1);
+            int aa = 0, bb = 0;
+            if (label2.Text == label6.Text) aa = aa + 1;
+            if (label2.Text == label7.Text) bb = bb + 1;
+            if (label2.Text == label8.Text) bb = bb + 1;
+            if (label2.Text == label9.Text) bb = bb + 1;
+            if (label3.Text == label6.Text) bb = bb + 1;
+            if (label3.Text == label7.Text) aa = aa + 1;
+            if (label3.Text == label8.Text) bb = bb + 1;
+            if (label3.Text == label9.Text) bb = bb + 1;
+            if (label4.Text == label6.Text) bb = bb + 1;
+            if (label4.Text == label7.Text) bb = bb + 1;
+            if (label4.Text == label8.Text) aa = aa + 1;
+            if (label4.Text == label9.Text) bb = bb + 1;
+            if (label5.Text == label6.Text) bb = bb + 1;
+            if (label5.Text == label7.Text) bb = bb + 1;
+            if (label5.Text == label8.Text) bb = bb + 1;
+            if (label5.Text == label9.Text) aa = aa + 1;
+            string c = textBox1.Text + " " + aa.ToString() + "A" + bb.ToString() + "B";
+            listBox1.Items.Add(c);
+            textBox1.Text = "";
+            textBox1.Focus();
+            if (aa==4)
+            {
+                MessageBox.Show("恭¢D喜s你±A答ga對i了F");
+                Application.Exit();
+
+            }
+        }
+    }
+}
